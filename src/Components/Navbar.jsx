@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import CartSidebar from "./CartSidebar";
 
 const Navbar = () => {
+  const [cartOpen, setCartOpen] = useState(false);
+  const toggleCart = () => setCartOpen(!cartOpen);
+
   //   const submitHandler = async (e) => {
   //     e.preventDefault();
   //     const response = await fetch("https://api.escuelajs.co/api/v1/products");
@@ -12,6 +17,7 @@ const Navbar = () => {
   //     setMealData(filtered);
   //     setInputData("");
   //   };
+  const products = useSelector((state) => state.product.items);
   return (
     <nav className="navbar navbar-expand-lg bg-white border-bottom shadow-sm sticky-top">
       <div className="container-fluid">
@@ -60,16 +66,17 @@ const Navbar = () => {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link position-relative" to="/cart">
+              <Link className="nav-link position-relative" onClick={toggleCart}>
                 {/* <FaShoppingCart /> */}
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  0
+                  {products.length}
                 </span>
               </Link>
             </li>
           </ul>
         </div>
       </div>
+      <CartSidebar isOpen={cartOpen} toggleCart={toggleCart} />
     </nav>
   );
 };

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
+import { useSelector, useDispatch } from "react-redux";
+import { addProduct, removeProduct } from "../redux/productSlice";
 
 const Product = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -8,6 +10,9 @@ const Product = () => {
   const [inputData, setInputData] = useState("");
   const { pathname } = useLocation();
   console.log("check the url :- ", location);
+
+  const dispatch = useDispatch();
+  const products = useSelector((state) => state.product.items);
 
   useEffect(() => {
     const fetchDataFromAPI = async () => {
@@ -38,10 +43,15 @@ const Product = () => {
     );
     setFilteredProducts(filteredData);
   };
+
+  const handleAddCart = (product) => {
+    const exist = products.some((item) => item.id === product.id);
+
+    dispatch(exist ? removeProduct(product.id) : addProduct(product));
+  };
   return (
     <>
       <Navbar />
-
       <div className="container my-4">
         <form className="d-flex">
           <input
@@ -62,12 +72,25 @@ const Product = () => {
               key={product.id}
               style={{ width: "18rem", minHeight: "350px", padding: "0px" }}
             >
-              <img
-                src={product.images?.[0] || product.image}
-                className="card-img-top"
-                alt={product.title}
-                style={{ height: "180px", objectFit: "cover" }}
-              />
+              <div className="position-relative">
+                <img
+                  src={product.images?.[0] || product.image}
+                  className="card-img-top"
+                  alt={product.title}
+                  style={{ height: "180px", objectFit: "cover" }}
+                />
+                <button
+                  className={`btn btn-sm position-absolute top-0 end-0 m-2 rounded-circle ${
+                    products.some((item) => item.id === product.id)
+                      ? "btn-danger"
+                      : "btn-primary"
+                  }`}
+                  style={{ width: "30px", height: "30px", padding: 0 }}
+                  onClick={() => handleAddCart(product)}
+                >
+                  {products.some((item) => item.id === product.id) ? "-" : "+"}
+                </button>
+              </div>
               <div className="card-body">
                 <h5 className="card-title">{product.title || "No Title"}</h5>
                 <p className="card-text">
@@ -76,6 +99,14 @@ const Product = () => {
                 <span className="badge bg-secondary">
                   {product.category?.name || "Category"}
                 </span>
+                {/* <a
+                  className="badge bg-primary mx-4"
+                  onClick={() => handleAddCart(product)}
+                >
+                  {products.some((item) => item.id === product.id)
+                    ? "Remove From Cart"
+                    : "Add to Cart"}
+                </a> */}
               </div>
             </div>
           ))}
