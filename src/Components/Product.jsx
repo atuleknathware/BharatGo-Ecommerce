@@ -3,13 +3,14 @@ import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import { useSelector, useDispatch } from "react-redux";
 import { addProduct, removeProduct } from "../redux/productSlice";
+import ProductDetail from "../pop-up/ProductPopup";
 
 const Product = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [productData, setProductData] = useState([]);
   const [inputData, setInputData] = useState("");
+  const [productDetail, setProductDetail] = useState({});
   const { pathname } = useLocation();
-  console.log("check the url :- ", location);
 
   const dispatch = useDispatch();
   const products = useSelector((state) => state.product.items);
@@ -61,16 +62,19 @@ const Product = () => {
             value={inputData}
             onChange={handleSearch}
           />
-          {/* <button className="btn btn-outline-success" type="submit">
-          Search
-        </button> */}
         </form>
         <div className="row justify-content-center products">
+          {!filteredProducts.length && (
+            <div className="alert alert-warning mt-5" role="alert">
+              No Products Matching with your search!
+            </div>
+          )}
           {filteredProducts.map((product) => (
             <div
               className="card m-3"
               key={product.id}
               style={{ width: "18rem", minHeight: "350px", padding: "0px" }}
+              onClick={() => setProductDetail(product)}
             >
               <div className="position-relative">
                 <img
@@ -86,7 +90,10 @@ const Product = () => {
                       : "btn-primary"
                   }`}
                   style={{ width: "30px", height: "30px", padding: 0 }}
-                  onClick={() => handleAddCart(product)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddCart(product);
+                  }}
                 >
                   {products.some((item) => item.id === product.id) ? "-" : "+"}
                 </button>
@@ -99,19 +106,15 @@ const Product = () => {
                 <span className="badge bg-secondary">
                   {product.category?.name || "Category"}
                 </span>
-                {/* <a
-                  className="badge bg-primary mx-4"
-                  onClick={() => handleAddCart(product)}
-                >
-                  {products.some((item) => item.id === product.id)
-                    ? "Remove From Cart"
-                    : "Add to Cart"}
-                </a> */}
               </div>
             </div>
           ))}
         </div>
       </div>
+      <ProductDetail
+        product={Object.keys(productDetail).length ? productDetail : null}
+        onClose={() => setProductDetail({})}
+      />
     </>
   );
 };

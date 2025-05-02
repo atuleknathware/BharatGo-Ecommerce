@@ -1,14 +1,19 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { removeProduct } from "../redux/productSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const CartSidebar = ({ isOpen, toggleCart }) => {
   const cartItems = useSelector((state) => state.product.items);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const totalPrice = cartItems.reduce((acc, item) => acc + item.price, 0);
-
+  const handleCheckoutClick = () => {
+    if (!localStorage.getItem("loggedEmail")) {
+      alert("You need to login first before you checkout");
+    }
+  };
   return (
     <div className={`cart-sidebar ${isOpen ? "open" : ""}`}>
       <div className="cart-header d-flex justify-content-between align-items-center p-3 border-bottom">
@@ -58,8 +63,12 @@ const CartSidebar = ({ isOpen, toggleCart }) => {
         <p className="mb-1">
           <strong>Total:</strong> ${totalPrice.toFixed(2)}
         </p>
-        <Link to="/cart" className="btn btn-primary w-100">
-          Go to Cart
+        <Link
+          onClick={handleCheckoutClick}
+          to={localStorage.getItem("loggedEmail") ? "/checkout" : "/login"}
+          className="btn btn-primary w-100"
+        >
+          Checkout
         </Link>
       </div>
     </div>

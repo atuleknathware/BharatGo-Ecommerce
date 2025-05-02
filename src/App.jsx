@@ -1,8 +1,10 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Product from "./Components/Product";
-import AuthForm from "./Components/AuthForm";
-import Cart from "./Components/Cart";
+import Login from "./Components/Login";
+import Register from "./Components/Register";
+import CheckoutPage from "./Components/CheckoutPage";
+import "bootstrap/dist/js/bootstrap.bundle.min";
 
 const App = () => {
   return (
@@ -14,11 +16,11 @@ const App = () => {
               <Route key={cat} path={`/${cat}`} element={<Product />} />
             )
           )}
-          {/* <Route path="/" element={<Product />} /> */}
-          <Route path="/login" element={<AuthForm />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
         </Routes>
       </BrowserRouter>
-      <div className="cart-modal">Hello There </div>
     </>
   );
 };
